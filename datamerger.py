@@ -71,7 +71,7 @@ class DataMergerUI(QtGui.QMainWindow):
 			self.ui.progressBar.setValue(0)
 	
 	def selectOutputDestination(self):
-		selectedDest = QtGui.QFileDialog.getSaveFileName(self,"Save output as..",self.ui.outputFileDestination.text(),".csv .xls")
+		selectedDest = QtGui.QFileDialog.getSaveFileName(self,"Save output as..",self.ui.outputFileDestination.text(),".csv .xls .xlsx")
 		# Prevent erasing previous entry on cancel press		
 		if selectedDest:
 			self.destinationFile = selectedDest

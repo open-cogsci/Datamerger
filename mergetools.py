@@ -12,6 +12,10 @@ import csv
 import xlrd	
 import xlwt
 
+# For writing Excel 2007 and higher xlsx
+from openpyxl import Workbook
+
+
 def read_csv(path_to_csv):
 	try:
 		f_csv = open(path_to_csv,"rb")
@@ -25,14 +29,13 @@ def read_csv(path_to_csv):
 	fieldnames = data.fieldnames
 	read_data = []
 	
-	unkown_found = False
 	for row in data:
-		if "UNKNOWN" in row:
-			unkown_found = True
+		#if "UNKNOWN" in row and not "UNKNOWN" in fieldnames:
+		#	fieldnames.append("UNKNOWN")
 		row["source_file"] = os.path.split(path_to_csv)[1]
 		read_data.append(row)
 		
-	return(fieldnames, read_data, unkown_found)
+	return(fieldnames, read_data)
 	
 	
 	
@@ -55,11 +58,7 @@ def write_csv(path_to_csv, header, data):
 			errorCount += 1			
 	return errorCount
 	
-	
-	
-def read_xls(path_to_xls):
-	unknown_found = False	
-	
+def read_xls(path_to_xls):	
 	workbook = xlrd.open_workbook(path_to_xls)
 	sheet = workbook.sheet_by_index(0)
 	headers = sheet.row_values(0)
@@ -73,7 +72,7 @@ def read_xls(path_to_xls):
 			row_data["source_file"] = os.path.split(path_to_xls)[1]
 		data.append(row_data)
 				
-	return (headers, data, unknown_found)
+	return (headers, data)
 
 def write_xls(path_to_xls, header, data):
 	workbook = xlwt.Workbook(encoding = 'utf8')
@@ -96,6 +95,29 @@ def write_xls(path_to_xls, header, data):
 			worksheet.write(row+1,col,value)
 	
 	workbook.save(path_to_xls)
+	return 0
+	
+	
+def write_xlsx(path_to_xlsx, header, data):
+	workbook = Workbook()
+	worksheet = workbook.worksheets[0]
+	
+	worksheet.title = "merged_data"
+		
+	# Write header
+	for col in xrange(len(header)):
+		cell = worksheet.cell(row=0,column=col)
+		cell.value = header[col]
+		cell.style.font.bold = True
+		
+	# Write data	
+	for row in xrange(0,len(data)):					
+		for col in xrange(len(header)):
+			col_name = header[col]			
+			value = data[row][col_name]								
+			worksheet.cell(row=row+1,column=col).value = value
+	
+	workbook.save(filename = str(path_to_xlsx))
 	return 0
 
 def mergeFolder(folder, destination, ui=None):
@@ -121,9 +143,9 @@ def mergeFolder(folder, destination, ui=None):
 		filetype = os.path.splitext(datafile)[1]
 		
 		if filetype == ".csv":
-			(header, data, unknown_found) = read_csv(os.path.join(folder,datafile))										
+			(header, data) = read_csv(os.path.join(folder,datafile))										
 		elif filetype in [".xls",".xlsx"]:
-			(header, data, unknown_found) = read_xls(os.path.join(folder,datafile))						
+			(header, data) = read_xls(os.path.join(folder,datafile))						
 	
 		col_names = list(set(col_names) | set(header) )
 		total_data.extend(data)
@@ -143,8 +165,10 @@ def mergeFolder(folder, destination, ui=None):
 	
 	if destination_ext == ".csv":	
 		errorCount = write_csv(destination, col_names, total_data)
-	elif destination_ext in [".xls",".xlsx"]:
-		errorCount = write_xls(destination, col_names, total_data)	
+	elif destination_ext == ".xls":
+		errorCount = write_xls(destination, col_names, total_data)
+	elif destination_ext == ".xlsx":
+		errorCount = write_xlsx(destination, col_names, total_data)
 			
 	ui.progressBar.setValue(100)			
 	print "Merged " + str(counter) + " files with " + str(errorCount) + " errors."
