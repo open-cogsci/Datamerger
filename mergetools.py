@@ -23,7 +23,10 @@ def read_csv(path_to_csv):
 		print >> sys.stderr, e
 		return False
 		
-	dialect = csv.Sniffer().sniff(f_csv.readline())
+	try:
+		dialect = csv.Sniffer().sniff(f_csv.readline())
+	except:
+		print >> sys.stderr, "Failed to sniff file parameters, assuming , as delimiter symbol"
 	f_csv.seek(0)			
 	data = csv.DictReader(f_csv,dialect=dialect,restkey="UNKNOWN",restval="")
 	fieldnames = data.fieldnames

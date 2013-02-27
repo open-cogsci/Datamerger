@@ -36,13 +36,22 @@ class OutLog:
 												
 		
 class DataMergerUI(QtGui.QMainWindow):
-	def __init__(self):
+	def __init__(self):								
 		QtGui.QMainWindow.__init__(self)
-		self.ui = uic.loadUi("datamerger.ui")
+
+		if getattr(sys, 'frozen', None):
+		     basedir = sys._MEIPASS
+		else:
+		     basedir = os.path.dirname(__file__)
+							
+		ui_path = os.path.join(basedir, "datamerger.ui")
+		ico_path = os.path.join(basedir, "datamerger.ico")
+		
+		self.ui = uic.loadUi(ui_path)
+		self.ui.setWindowIcon(QtGui.QIcon(ico_path))
 		self.ui.setFixedSize(530,250)
 		self.ui.move(300, 300)
 		self.ui.setWindowTitle('Data merger')
-		self.ui.setWindowIcon(QtGui.QIcon("icon.png"))
 		self.ui.show()
 		
 		self.connect(self.ui.inputFolderButton, QtCore.SIGNAL("clicked()"), self.selectInputFolder)
@@ -53,11 +62,11 @@ class DataMergerUI(QtGui.QMainWindow):
 		sys.stderr = OutLog(self.ui.statusBox, sys.stderr, QtGui.QColor(255,0,0))
 		print ""
 		
-		self.sourceFolder = "H:\Desktop\csv"
-		self.ui.inputFolderLocation.setText(os.path.normpath(self.sourceFolder))
+		self.sourceFolder = ""
+		#self.ui.inputFolderLocation.setText(os.path.normpath(self.sourceFolder))
 		
-		self.destinationFile = "H:\Desktop\\test.csv"
-		self.ui.outputFileDestination.setText(os.path.normpath(str(self.destinationFile)))
+		self.destinationFile = ""
+		#self.ui.outputFileDestination.setText(os.path.normpath(str(self.destinationFile)))
 		
 		self._lastSelectedDestDir = ""
 		self._lastSelectedSourceDir = ""
