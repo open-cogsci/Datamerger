@@ -1,9 +1,20 @@
 # -*- coding: utf-8 -*-
 """
-Created on Thu Feb 21 15:38:52 2013
+This file is part of Datamerger
 
-@author: dsj200
+Datamerger is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Datamerger is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+Refer to <http://www.gnu.org/licenses/> for a copy of the GNU General Public License.
 """
+
 import os
 import sys
 import csv
@@ -27,6 +38,8 @@ def read_csv(path_to_csv):
 		dialect = csv.Sniffer().sniff(f_csv.readline())
 	except:
 		print >> sys.stderr, "Failed to sniff file parameters, assuming , as delimiter symbol"
+		dialect = csv.get_dialect('excel')
+		
 	f_csv.seek(0)			
 	data = csv.DictReader(f_csv,dialect=dialect,restkey="UNKNOWN",restval="")
 	fieldnames = data.fieldnames
@@ -162,7 +175,7 @@ def mergeFolder(folder, destination, ui=None):
 	if unknown_found:
 		col_names += ["UNKNOWN"]
 		
-	print "Writing data to file"	
+	print "Writing data to file (please be patient, this can take a while...)"	
 	
 	destination_ext = os.path.splitext(str(destination))[1]
 	
