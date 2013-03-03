@@ -21,11 +21,11 @@ this repository are located in the same folder.
 
 If you want to use the GUI simply run the program by
 
-    python datamerger.py
+    python datamerger
 
 It is also possible to use the program from CLI:
 
-    python datamerger.py <source_folder> [<target_file>]
+    python datamerger <source_folder> [<target_file>]
 
 If a source folder (and target_file) is specified, the GUI will not be started and Datamerger will
 immediately start merging the files (.csv .xls .xlsx) found in the source folder.

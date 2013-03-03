@@ -1,9 +1,15 @@
 # -*- mode: python -*-
-a = Analysis(['datamerger.py'],
+a = Analysis(['datamerger'],
              pathex=['C:\\Dropbox\\Projects\\PyQT Spreadsheet merger'],
              hiddenimports=[],
              hookspath=None)
-a.datas += [('datamerger.ico','datamerger.ico','DATA'),('datamerger.ui','datamerger.ui','DATA')]
+a.datas += [
+('resources/datamerger.ico','resources/datamerger.ico','DATA'),
+('resources/datamerger.ui','resources/datamerger.ui','DATA'),
+('resources/help-about.png','resources/help-about.png','DATA'),
+('resources/help-contents.png','resources/help-contents.png','DATA'),
+('resources/helpfile.html','resources/helpfile.html','DATA'),
+]
 pyz = PYZ(a.pure)
 exe = EXE(pyz,
           a.scripts + [('O','','OPTION')],
@@ -14,6 +20,6 @@ exe = EXE(pyz,
           debug=False,
           strip=None,
           upx=True,
-          console=False , icon='datamerger.ico')
+          console=False , icon='resources/datamerger.ico')
 app = BUNDLE(exe,
              name=os.path.join('dist', 'datamerger.exe.app'))

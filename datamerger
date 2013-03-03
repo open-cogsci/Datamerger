@@ -1,0 +1,48 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+"""
+Datamerger is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+Datamerger is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+Refer to <http://www.gnu.org/licenses/> for a copy of the GNU General Public License.
+
+@author Daniel Schreij
+"""
+
+import sys
+import os
+import sheet_io_tools
+from libdatamerger import DataMergerUI
+		
+if __name__ == "__main__":
+	if len(sys.argv) == 1:
+		DataMergerUI()
+	elif len(sys.argv) == 2:
+		if os.path.isdir(sys.argv[1]):
+			sheet_io_tools.mergeFolder(sys.argv[1],"./merged_data.csv")
+		else:
+			print >> sys.stderr, "The specified source folder is invalid"
+	elif len(sys.argv) == 3:
+		if not os.path.isdir(sys.argv[1]):
+			print >> sys.stderr, "The specified source folder is invalid"
+		elif not os.path.isdir(os.path.split(sys.argv[2])[0]):
+			print >> sys.stderr, "Invalid folder specified for output file"
+		
+		if os.path.splitext(sys.argv[2])[1] not in [".csv",".xls",".xlsx"]:
+			sys.argv[2] += ".csv"
+		
+		# Make sure stacktrace is ommitted and only error message is printed
+		# if something goes wrong from here
+		try:
+			sheet_io_tools.mergeFolder(sys.argv[1], sys.argv[2])
+		except Exception as e:
+			print >> sys.stderr, "Error: " + str(e)
+		
+	

@@ -1,0 +1,59 @@
+<html>
+<head>
+<title>Help</title>
+<style>
+body{
+	font-family: "Helvetica","Arial";
+	margin: 25px;
+}
+
+h1, h2{
+	color: #046;
+}
+
+h2{
+	line-height: 50px;
+	border-bottom: 1px solid #07A;
+}
+
+
+</style>
+</head>
+<body>
+<h1>Datamerger<br/><sub style='font-size:40%; font-weight:normal'>Copyright Daniel Schreij (2013)</sub></h1>
+
+Datamerger can combine several spreadsheets into one large spreadsheet. While doing so,
+it takes column names into account and therefore can correct for small inconsistenties
+between the spreadsheets to be merged (e.g. different column order, missing columns in some sheets).
+It is therefore important that each file to be merged contains a header, which is a row of textual labels
+at the top of each column used to identify the data in the rows below.
+Datamerger can read from and write to several formats (comma separated value lists (.csv), Excel 97-2003 (.xls)
+and Excel 2007 and higher (.xlsx))
+
+<h2>Usage GUI</h2>
+Simply select the folder containing the files to be merged in the "Source folder" field. Only files with an extension of .csv .xls or .xlsx will be processed. Then specify the filename and location to which the output file should be saved in the "Output file" field.
+This can be a file with .csv .xls or .xlsx extension. Datamerger will automatically determine what data type to write the output in by this extension. After both these steps are completed, press the 'merge' button and the merging process will commence. 
+<i>Writing the output file in xls or xlsx format can take quite some time for large output files</i>, so sit back and relax.
+
+<h2>Usage CLI</h2>
+
+It is also possible to use the Datamerger from the CLI:
+
+<p><code>python datamerger &lt;source_folder&gt; [&lt;target_file&gt;]</code></p>
+
+If a source folder (and target_file) is specified, the GUI will not be started and Datamerger will
+immediately start merging the files (.csv .xls .xlsx) found in the source folder.<br/>
+If a target folder is specified, the program will save the merged data to this filename.
+This file will be of the type csv, xls or xlsx, depending on the extension
+that was given for target_file. <br/>
+If only a source_folder was specified and the target_file argument is ommitted, the output will be saved to merged_data.csv in the folder where the datamerger program is located
+
+<h2>Licensing</h2>
+
+<p>Datamerger has been released under the terms of the GNU General Public License 3. You can find the full text of this license at <a href='http://www.gnu.org/licenses/gpl.txt'>http://www.gnu.org/licenses/gpl.txt</a></p>
+<p>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.</p>
+<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.</p>
+<p>See <a href='http://www.gnu.org/licenses/'>http://www.gnu.org/licenses/</a> for a copy of the GNU General Public License</p>
+
+</body>
+</html>
