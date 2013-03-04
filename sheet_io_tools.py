@@ -96,7 +96,7 @@ def write_csv(path_to_csv, header, data):
 		try:
 			output.writerow(row)
 		except Exception as e:
-			print >> sys.stderr, "Warning ("+ row["source_file"] + "): " + str(e)
+			print >> sys.stderr, "Warning ("+ row["dm_source_file"] + "): " + str(e)
 			errorCount += 1			
 	return errorCount
 	
@@ -246,7 +246,7 @@ def mergeFolder(folder, destination, ui=None):
 			ui.progressBar.setValue(progress)	
 	
 	print "Writing merged data to file (please be patient as this can take a while...)"
-	ui.progressBar.setValue(progress+1)  #If this is ommitted, above line is not printed to textbox in GUI...
+	#ui.progressBar.setValue(progress+1)  #If this is ommitted, above line is not printed to textbox in GUI...
 	
 	# Add column to add source file info
 	col_names = ["dm_source_file"] + col_names

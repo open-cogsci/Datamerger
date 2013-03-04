@@ -55,13 +55,14 @@ class OutLog:
 		self._version = 1.0
 		self._author = "Daniel Schreij"
 
-	def write(self, m):		
+	def write(self, m):
+		self.statusBox.moveCursor(QtGui.QTextCursor.End)		
 		if self.color:
-			self.statusBox.setTextColor(self.color)
-			
-		self.statusBox.moveCursor(QtGui.QTextCursor.End)
+			self.statusBox.setTextColor(self.color)			
+		
 		self.statusBox.insertPlainText( m )
-		self.statusBox.moveCursor(QtGui.QTextCursor.End)
+		# Make sure the messages are immediately shown
+		QtCore.QCoreApplication.instance().processEvents()
 
 		if self.out:
 			self.out.write(m)
