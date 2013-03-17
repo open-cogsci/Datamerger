@@ -35,10 +35,12 @@ Copyright 2013
 
 def get_resource_loc(item):
 	if getattr(sys, 'frozen', None):
-	     basedir = sys._MEIPASS
+		basedir = sys._MEIPASS
+	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
+		basedir = '/usr/share/datamerger/resources/'
 	else:
-	     basedir = os.path.dirname(__file__)
-	return os.path.join(basedir,"resources",item)
+		basedir = os.path.dirname(__file__)
+	return os.path.join(basedir,"../resources",item)
 
 class OutLog:
 	def __init__(self, statusBox, out=None, color=None):
