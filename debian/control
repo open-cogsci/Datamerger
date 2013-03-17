@@ -1,0 +1,25 @@
+Source: datamerger
+Section: science
+Priority: extra
+Maintainer: Daniel Schreij <dschreij@vu.nl>
+Homepage: https://github.com/dschreij/Datamerger
+Build-Depends: debhelper (>= 7.0.50~), python-support, python-all, python-qt4,
+  python-xlrd, python-xlwt, python-openpyxl
+XS-Python-Version: >= 2.6
+Standards-Version: 3.9.3
+
+Package: datamerger
+Architecture: all
+XB-Python-Version: ${python:Versions}
+Depends: ${misc:Depends}, ${python:Depends}, python (>= 2.6),
+   python-support (>= 0.90.0), python-qt4, python-xlrd, python-xlwt,
+   python-openpyxl
+Recommends: opensesame
+Description: Datamerger can merge separate spreadsheets into one large
+  spreadsheet. While doing so, it takes column names into account, and therefore
+  can correct for small inconsistenties between the spreadsheets to be merged
+  (e.g. different column order, missing columns in some sheets). It is therefore
+  important that each file to be merged contains a header, which is a row of
+  textual labels at the top to identify the data in each column. Data merger can
+  read from and write to several formats (comma separated value lists (.csv),
+  Excel 97-2003 (.xls) and Excel 2007 and higher (.xlsx))
