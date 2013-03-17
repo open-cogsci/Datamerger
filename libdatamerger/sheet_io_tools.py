@@ -25,8 +25,12 @@ import csv
 import xlrd	
 import xlwt
 
-# For writing Excel 2007 and higher xlsx
-from openpyxl import Workbook
+# For writing Excel 2007 and higher xlsx. Older versions of openpyxl may not
+# have the Workbook.
+try:
+	from openpyxl import Workbook
+except:
+	Workbook = None
 
 
 def read_csv(path_to_csv):
@@ -178,6 +182,12 @@ def write_xlsx(path_to_xlsx, header, data):
 	Returns:
 		errorCount (int): 0 if no errors, or otherwise the number of (non-critical) errors that occurred
 	"""
+
+	# Check if Workbook functionality is available. TODO handle this in a more
+	# elegant way.
+	if Workbook == None:
+		return 1
+	
 	workbook = Workbook()
 	worksheet = workbook.worksheets[0]
 	

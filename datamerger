@@ -18,8 +18,8 @@ Refer to <http://www.gnu.org/licenses/> for a copy of the GNU General Public Lic
 
 import sys
 import os
-import sheet_io_tools
-from libdatamerger import DataMergerUI
+from libdatamerger import sheet_io_tools
+from libdatamerger.datamerger_ui import DataMergerUI
 		
 if __name__ == "__main__":
 	if len(sys.argv) == 1:
