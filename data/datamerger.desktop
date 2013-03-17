@@ -1,0 +1,12 @@
+[Desktop Entry]
+Name=DataMerger
+Comment=Merges separate spreadsheets into one large spreadsheet
+TryExec=datamerger
+Exec=datamerger
+Icon=x-office-spreadsheet
+Type=Application
+Categories=GNOME;GTK;Utility;
+StartupNotify=false
+X-Ubuntu-Gettext-Domain=datamerger
+Name[en_US]=DataMerger
+
