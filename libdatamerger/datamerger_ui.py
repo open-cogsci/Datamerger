@@ -21,7 +21,7 @@ import sheet_io_tools
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtWebKit import QWebView
 
-version = 1.0
+version = 1.01
 author = "Daniel Schreij"
 email = "d.schreij@vu.nl"
 
