@@ -289,15 +289,19 @@ def mergeFolder(folder, destination, ui=None):
 		col_names += ["UNKNOWN"]
 	
 	destination_ext = os.path.splitext(str(destination))[1]
+	
 	if destination_ext == ".csv":	
 		errorCount = write_csv(destination, col_names, total_data)
 	elif destination_ext == ".xls":
 		errorCount = write_xls(destination, col_names, total_data)
 	elif destination_ext == ".xlsx":
 		errorCount = write_xlsx(destination, col_names, total_data)
-			
-	ui.progressBar.setValue(100)			
+	
+	if not ui is None:
+		ui.progressBar.setValue(100)			
+
 	print "Merged " + str(counter) + " files with " + str(errorCount) + " errors."
+	
 	return True
 	
 	
