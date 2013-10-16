@@ -38,7 +38,7 @@ def get_resource_loc(item):
 		basedir = sys._MEIPASS		
 		return os.path.join(basedir,"resources",item)
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
-		return '/usr/share/datamerger/resources/'
+		return os.path.join('/usr/share/datamerger/resources/', item)
 	else:
 		basedir = os.path.dirname(__file__)
 		return os.path.join(basedir,"../resources",item)
