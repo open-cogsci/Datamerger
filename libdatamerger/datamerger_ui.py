@@ -21,7 +21,7 @@ import sheet_io_tools
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtWebKit import QWebView
 
-version = 1.0
+version = 1.02
 author = "Daniel Schreij"
 email = "d.schreij@vu.nl"
 
@@ -35,12 +35,13 @@ Copyright 2013
 
 def get_resource_loc(item):
 	if getattr(sys, 'frozen', None):
-		basedir = sys._MEIPASS
+		basedir = sys._MEIPASS		
+		return os.path.join(basedir,"resources",item)
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
-		basedir = '/usr/share/datamerger/resources/'
+		return '/usr/share/datamerger/resources/'
 	else:
 		basedir = os.path.dirname(__file__)
-	return os.path.join(basedir,"../resources",item)
+		return os.path.join(basedir,"../resources",item)
 
 class OutLog:
 	def __init__(self, statusBox, out=None, color=None):

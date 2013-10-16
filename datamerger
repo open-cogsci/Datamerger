@@ -31,18 +31,20 @@ if __name__ == "__main__":
 			print >> sys.stderr, "The specified source folder is invalid"
 	elif len(sys.argv) == 3:
 		if not os.path.isdir(sys.argv[1]):
-			print >> sys.stderr, "The specified source folder is invalid"
+			print >> sys.stderr, "Error: The specified source folder is invalid"
 		elif not os.path.isdir(os.path.split(sys.argv[2])[0]):
-			print >> sys.stderr, "Invalid folder specified for output file"
-		
-		if os.path.splitext(sys.argv[2])[1] not in [".csv",".xls",".xlsx"]:
-			sys.argv[2] += ".csv"
-		
-		# Make sure stacktrace is ommitted and only error message is printed
-		# if something goes wrong from here
-		try:
-			sheet_io_tools.mergeFolder(sys.argv[1], sys.argv[2])
-		except Exception as e:
-			print >> sys.stderr, "Error: " + str(e)
+			print >> sys.stderr, "Error: Invalid folder specified for output file"
+		elif os.path.isdir(sys.argv[2]):
+			print >> sys.stderr, "Error: Folder specified instead of filename for output file"	
+		else:
+			if os.path.splitext(sys.argv[2])[1] not in [".csv",".xls",".xlsx"]:
+				sys.argv[2] += ".csv"
+			
+			# Make sure stacktrace is ommitted and only error message is printed
+			# if something goes wrong from here
+			try:
+				sheet_io_tools.mergeFolder(sys.argv[1], sys.argv[2])
+			except Exception as e:
+				print >> sys.stderr, "Error: " + str(e)
 		
 	

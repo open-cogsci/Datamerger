@@ -32,6 +32,20 @@ try:
 except:
 	Workbook = None
 
+def correct_datatype(value):
+	""" Convert values to correct datatype if they are int or float
+	If they are uncovertible, just return the original string. """
+	
+	try:
+		return int(value)
+	except ValueError:
+		pass
+	try:
+		return float(value)
+	except ValueError:
+		pass
+	return value
+	
 
 def read_csv(path_to_csv):
 	"""
@@ -161,9 +175,13 @@ def write_xls(path_to_xls, header, data):
 	# Write data	
 	for row in xrange(0,len(data)):					
 		for col in xrange(len(header)):
-			col_name = header[col]			
-			value = data[row][col_name]								
-			worksheet.write(row+1,col,value)
+			col_name = header[col]	
+			try:
+				value = data[row][col_name]
+			except KeyError:
+				value = ""		
+						
+			worksheet.write(row+1, col, correct_datatype(value) )
 	
 	workbook.save(path_to_xls)
 	return 0
@@ -185,7 +203,7 @@ def write_xlsx(path_to_xlsx, header, data):
 
 	# Check if Workbook functionality is available. TODO handle this in a more
 	# elegant way.
-	if Workbook == None:
+	if Workbook is None:
 		return 1
 	
 	workbook = Workbook()
@@ -202,9 +220,13 @@ def write_xlsx(path_to_xlsx, header, data):
 	# Write data	
 	for row in xrange(0,len(data)):					
 		for col in xrange(len(header)):
-			col_name = header[col]			
-			value = data[row][col_name]								
-			worksheet.cell(row=row+1,column=col).value = value
+			col_name = header[col]	
+			try:
+				value = data[row][col_name]
+			except KeyError:
+				value = ""
+			
+			worksheet.cell(row=row+1,column=col).value = correct_datatype(value)
 	
 	workbook.save(filename = str(path_to_xlsx))
 	return 0
@@ -267,15 +289,19 @@ def mergeFolder(folder, destination, ui=None):
 		col_names += ["UNKNOWN"]
 	
 	destination_ext = os.path.splitext(str(destination))[1]
+	
 	if destination_ext == ".csv":	
 		errorCount = write_csv(destination, col_names, total_data)
 	elif destination_ext == ".xls":
 		errorCount = write_xls(destination, col_names, total_data)
 	elif destination_ext == ".xlsx":
 		errorCount = write_xlsx(destination, col_names, total_data)
-			
-	ui.progressBar.setValue(100)			
+	
+	if not ui is None:
+		ui.progressBar.setValue(100)			
+
 	print "Merged " + str(counter) + " files with " + str(errorCount) + " errors."
+	
 	return True
 	
 	
