@@ -1,3 +1,9 @@
+datamerger (1.02-ubuntu2) raring; urgency=low
+
+  * Numerous bugfixes
+
+ -- Sebastiaan Mathot <s.mathot@cogsci.nl>  Wed, 16 Oct 2013 17:47:32 +0200
+
 datamerger (1.0-ubuntu5) precise; urgency=low
 
   * Initial release.
