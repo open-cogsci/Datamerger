@@ -35,13 +35,20 @@ Copyright 2013
 
 def get_resource_loc(item):
 	if getattr(sys, 'frozen', None):
-		basedir = sys._MEIPASS		
-		return os.path.join(basedir,"resources",item)
+		try:
+			# If packaged with pyinstaller
+			basedir = sys._MEIPASS		
+			return os.path.join(basedir,item)			
+		except:
+			# If packaged with py2exe (but should also work for py2installer (not tested!) )
+			basedir = os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))	
+			return os.path.join(basedir, "resources", item)
+		
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
-		return '/usr/share/datamerger/resources/'
+		return os.path.join('/usr/share/datamerger/resources/', item)
 	else:
 		basedir = os.path.dirname(__file__)
-		return os.path.join(basedir,"../resources",item)
+		return os.path.join(basedir,"..","resources",item)
 
 class OutLog:
 	def __init__(self, statusBox, out=None, color=None):
@@ -54,9 +61,6 @@ class OutLog:
 		self.statusBox = statusBox
 		self.out = out
 		self.color = color
-		
-		self._version = 1.0
-		self._author = "Daniel Schreij"
 
 	def write(self, m):
 		self.statusBox.moveCursor(QtGui.QTextCursor.End)		
@@ -82,7 +86,7 @@ class DataMergerUI(QtGui.QMainWindow):
 
 		# Load resources							
 		ui_path = get_resource_loc("datamerger.ui")
-		ico_path = get_resource_loc("datamerger.ico")
+		ico_path = get_resource_loc("datamerger.png")
 		helpimg_path = get_resource_loc("help-about.png")
 		aboutimg_path = get_resource_loc("help-contents.png")		
 		
@@ -109,7 +113,10 @@ class DataMergerUI(QtGui.QMainWindow):
 		# Redirect console output to textbox in UI, printing stdout in black
 		# and stderr in red
 		sys.stdout = OutLog(ui.statusBox, sys.stdout, QtGui.QColor(0,0,0))
-		sys.stderr = OutLog(ui.statusBox, sys.stderr, QtGui.QColor(255,0,0))
+		if not hasattr(sys,'frozen'):
+			sys.stderr = OutLog(ui.statusBox, sys.stderr, QtGui.QColor(255,0,0))
+		else:
+			sys.stderr = OutLog(ui.statusBox, None, QtGui.QColor(255,0,0))
 		print ""
 		
 		self.sourceFolder = ""	
