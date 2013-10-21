@@ -19,10 +19,10 @@ Refer to <http://www.gnu.org/licenses/> for a copy of the GNU General Public Lic
 import sys
 import os
 from libdatamerger import sheet_io_tools
-from libdatamerger.datamerger_ui import DataMergerUI
 		
 if __name__ == "__main__":
 	if len(sys.argv) == 1:
+		from libdatamerger.datamerger_ui import DataMergerUI
 		DataMergerUI()
 	elif len(sys.argv) == 2:
 		if os.path.isdir(sys.argv[1]):
