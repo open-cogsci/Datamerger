@@ -78,16 +78,13 @@ def read_csv(path_to_csv):
 	read_data = []
 	
 	for row in data:
-		#if "UNKNOWN" in row and not "UNKNOWN" in fieldnames:
-		#	fieldnames.append("UNKNOWN")
 		row["dm_source_file"] = os.path.split(path_to_csv)[1]
 		read_data.append(row)
 		
 	return(fieldnames, read_data)
 	
 	
-	
-def write_csv(path_to_csv, header, data):
+def write_csv(path_to_csv, header, data, ui=None, files=None):
 	"""
 	Writes a csv file from the specified data
 	
@@ -106,16 +103,32 @@ def write_csv(path_to_csv, header, data):
 		print >> sys.stderr, e
 		return False
 		
+	# Sort header alphabetically	
+	header.sort()	
+	
 	output = csv.DictWriter(out_fp, fieldnames=header, dialect='excel', lineterminator="\n", quotechar="\"", restval="",escapechar="\\")
 	output.writeheader()
 	
 	errorCount = 0
+	counter = 0
+	if ui and files:
+		rows_part = len(data)/files	
+	
 	for row in data:
+		counter += 1
 		try:
 			output.writerow(row)
 		except Exception as e:
 			print >> sys.stderr, "Warning ("+ row["dm_source_file"] + "): " + str(e)
-			errorCount += 1			
+			errorCount += 1
+		
+		if not ui is None:
+			if counter % rows_part == 0:
+				part = counter/rows_part								
+				progress = int((part+files)/float(2*files+1)*100)
+				ui.progressBar.setValue(progress)	
+				
+			
 	return errorCount
 	
 def read_xls(path_to_xls):
@@ -146,7 +159,7 @@ def read_xls(path_to_xls):
 				
 	return (headers, data)
 
-def write_xls(path_to_xls, header, data):
+def write_xls(path_to_xls, header, data, ui=None, files=None):
 	"""
 	Writes a xls (Excel 97-2003) file from the specified data
 	
@@ -159,6 +172,8 @@ def write_xls(path_to_xls, header, data):
 	Returns:
 		errorCount (int): 0 if no errors, or otherwise the number of (non-critical) errors that occurred
 	"""
+	# Sort header alphabetically	
+	header.sort()	
 	
 	workbook = xlwt.Workbook(encoding = 'utf8')
 	worksheet = workbook.add_sheet("merged_data")
@@ -171,9 +186,14 @@ def write_xls(path_to_xls, header, data):
 	style.font = font # Apply the Font to the Style	
 	for col in xrange(len(header)):
 		worksheet.write(0,col,header[col],style)
+
+	counter = 0
+	if ui and files:
+		rows_part = len(data)/files			
 		
 	# Write data	
-	for row in xrange(0,len(data)):					
+	for row in xrange(0,len(data)):	
+		counter += 1				
 		for col in xrange(len(header)):
 			col_name = header[col]	
 			try:
@@ -182,12 +202,18 @@ def write_xls(path_to_xls, header, data):
 				value = ""		
 						
 			worksheet.write(row+1, col, correct_datatype(value) )
+		
+		if not ui is None:
+			if counter % rows_part == 0:
+				part = counter/rows_part								
+				progress = int((part+files)/float(2*files+1)*100)
+				ui.progressBar.setValue(progress)	
 	
 	workbook.save(path_to_xls)
 	return 0
 	
 	
-def write_xlsx(path_to_xlsx, header, data):
+def write_xlsx(path_to_xlsx, header, data, ui=None, files=None):
 	"""
 	Writes a xlsx file (Excel 2010 and higher) from the specified data
 	
@@ -205,20 +231,28 @@ def write_xlsx(path_to_xlsx, header, data):
 	# elegant way.
 	if Workbook is None:
 		return 1
+		
+	# Sort header alphabetically	
+	header.sort()	
 	
 	workbook = Workbook()
 	worksheet = workbook.worksheets[0]
 	
 	worksheet.title = "merged_data"
-		
+			
 	# Write header in bold
 	for col in xrange(len(header)):
 		cell = worksheet.cell(row=0,column=col)
 		cell.value = header[col]
 		cell.style.font.bold = True
-		
+	
+	counter = 0
+	if ui and files:
+		rows_part = len(data)/files	
+	
 	# Write data	
-	for row in xrange(0,len(data)):					
+	for row in xrange(0,len(data)):	
+		counter += 1				
 		for col in xrange(len(header)):
 			col_name = header[col]	
 			try:
@@ -227,6 +261,12 @@ def write_xlsx(path_to_xlsx, header, data):
 				value = ""
 			
 			worksheet.cell(row=row+1,column=col).value = correct_datatype(value)
+		
+		if not ui is None:
+			if counter % rows_part == 0:
+				part = counter/rows_part								
+				progress = int((part+files)/float(2*files+1)*100)
+				ui.progressBar.setValue(progress)	
 	
 	workbook.save(filename = str(path_to_xlsx))
 	return 0
@@ -274,7 +314,7 @@ def mergeFolder(folder, destination, ui=None):
 		counter += 1
 						
 		if not ui is None:
-			progress = int(counter/float(len(valid_files)+1)*100)
+			progress = int(counter/float(2*len(valid_files)+1)*100)
 			ui.progressBar.setValue(progress)	
 	
 	print "Writing merged data to file (please be patient as this can take a while...)"
@@ -291,11 +331,11 @@ def mergeFolder(folder, destination, ui=None):
 	destination_ext = os.path.splitext(str(destination))[1]
 	
 	if destination_ext == ".csv":	
-		errorCount = write_csv(destination, col_names, total_data)
+		errorCount = write_csv(destination, col_names, total_data, ui, len(valid_files))
 	elif destination_ext == ".xls":
-		errorCount = write_xls(destination, col_names, total_data)
+		errorCount = write_xls(destination, col_names, total_data, ui, len(valid_files))
 	elif destination_ext == ".xlsx":
-		errorCount = write_xlsx(destination, col_names, total_data)
+		errorCount = write_xlsx(destination, col_names, total_data, ui, len(valid_files))
 	
 	if not ui is None:
 		ui.progressBar.setValue(100)			
