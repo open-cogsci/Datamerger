@@ -187,13 +187,11 @@ def write_xls(path_to_xls, header, data, ui=None, files=None):
 	for col in xrange(len(header)):
 		worksheet.write(0,col,header[col],style)
 
-	counter = 0
 	if ui and files:
 		rows_part = len(data)/files			
 		
 	# Write data	
-	for row in xrange(0,len(data)):	
-		counter += 1				
+	for row in xrange(0,len(data)):				
 		for col in xrange(len(header)):
 			col_name = header[col]	
 			try:
@@ -204,8 +202,8 @@ def write_xls(path_to_xls, header, data, ui=None, files=None):
 			worksheet.write(row+1, col, correct_datatype(value) )
 		
 		if not ui is None:
-			if counter % rows_part == 0:
-				part = counter/rows_part								
+			if row % rows_part == 0:
+				part = row/rows_part								
 				progress = int((part+files)/float(2*files+1)*100)
 				ui.progressBar.setValue(progress)	
 	
@@ -235,36 +233,34 @@ def write_xlsx(path_to_xlsx, header, data, ui=None, files=None):
 	# Sort header alphabetically	
 	header.sort()	
 	
-	workbook = Workbook()
-	worksheet = workbook.worksheets[0]
+	workbook = Workbook(optimized_write = True)
+	worksheet = workbook.create_sheet()
 	
 	worksheet.title = "merged_data"
-			
-	# Write header in bold
-	for col in xrange(len(header)):
-		cell = worksheet.cell(row=0,column=col)
-		cell.value = header[col]
-		cell.style.font.bold = True
-	
-	counter = 0
+				
 	if ui and files:
 		rows_part = len(data)/files	
 	
-	# Write data	
+	### Write data	
+
+	# Write column names first
+	worksheet.append(header)	
+	
 	for row in xrange(0,len(data)):	
-		counter += 1				
+		row_data = []				
 		for col in xrange(len(header)):
 			col_name = header[col]	
 			try:
 				value = data[row][col_name]
 			except KeyError:
 				value = ""
+			row_data.append(correct_datatype(value))
 			
-			worksheet.cell(row=row+1,column=col).value = correct_datatype(value)
+		worksheet.append(row_data)
 		
 		if not ui is None:
-			if counter % rows_part == 0:
-				part = counter/rows_part								
+			if row % rows_part == 0:
+				part = row/rows_part								
 				progress = int((part+files)/float(2*files+1)*100)
 				ui.progressBar.setValue(progress)	
 	

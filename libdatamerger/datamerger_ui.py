@@ -28,7 +28,7 @@ email = "d.schreij@vu.nl"
 aboutString = """
 Datamerger v{0}
 
-Copyright 2013
+Copyright 2013-2014
 {1}	
 {2}	
 """.format(version,author,email)	
