@@ -1,10 +1,10 @@
 Datamerger
 ==========
-Copyright Daniel Schreij (2013)
+Copyright Daniel Schreij (2013-2014)
 
 ABOUT
 -----
-Current version: 1.02
+Current version: 1.0.3
 
 Datamerger can merge separate spreadsheets into one large spreadsheet. While doing so,
 it takes column names into account, and therefore can correct for small inconsistenties

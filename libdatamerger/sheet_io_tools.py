@@ -66,22 +66,32 @@ def read_csv(path_to_csv):
 		print >> sys.stderr, e
 		return False
 		
+	# Try to determine which format of csv is used. In some countries, the
+	# list separator symbol is ; instead of , and hopefully this will catch that
+	# discrepancy.
 	try:
 		dialect = csv.Sniffer().sniff(f_csv.readline())
 	except:
-		print >> sys.stderr, "Failed to sniff file parameters, assuming , as delimiter symbol"
+		print >> sys.stderr, "Failed to sniff parameters for file {0}, assuming , to be the delimiter symbol".format(os.path.split(path_to_csv)[1])
 		dialect = csv.get_dialect('excel')
-		
+			
 	f_csv.seek(0)			
-	data = csv.DictReader(f_csv,dialect=dialect,restkey="UNKNOWN",restval="")
-	fieldnames = data.fieldnames
-	read_data = []
 	
-	for row in data:
-		row["dm_source_file"] = os.path.split(path_to_csv)[1]
-		read_data.append(row)
+	# Read the file with dictreader. If the file is empty or corrupt (such as defaultlog.csv in OpenSesame)
+	# then skip the file but print an error message.
+	try:
+		data = csv.DictReader(f_csv,dialect=dialect,restkey="UNKNOWN",restval="")
+		fieldnames = data.fieldnames
+		read_data = []
 		
-	return(fieldnames, read_data)
+		for row in data:
+			row["dm_source_file"] = os.path.split(path_to_csv)[1]
+			read_data.append(row)
+			
+		return(fieldnames, read_data)
+	except Exception as e:
+		print >> sys.stderr, "Failed to read file {0}: {1}".format(os.path.split(path_to_csv)[1],e)		
+		return (False, False)
 	
 	
 def write_csv(path_to_csv, header, data, ui=None, files=None):
@@ -305,13 +315,21 @@ def mergeFolder(folder, destination, ui=None):
 		elif filetype in [".xls",".xlsx"]:
 			(header, data) = read_xls(os.path.join(folder,datafile))						
 	
-		col_names = list(set(col_names) | set(header) )
-		total_data.extend(data)
-		counter += 1
-						
-		if not ui is None:
-			progress = int(counter/float(2*len(valid_files)+1)*100)
-			ui.progressBar.setValue(progress)	
+		# read_csv() can return (False, False) if csv file was invalid.
+		# Therefore check if data is correct and only then add to total data.
+		if header and data:
+			# Make sure every column name only occurs once
+			col_names = list(set(col_names) | set(header) )
+	
+			# Add data to rest of data		
+			total_data.extend(data)
+			counter += 1
+							
+			if not ui is None:
+				progress = int(counter/float(2*len(valid_files)+1)*100)
+				ui.progressBar.setValue(progress)	
+		else:
+			print >> sys.stderr, "Error reading {0}. Skipping ...".format(os.path.split(datafile)[1])
 	
 	print "Writing merged data to file (please be patient as this can take a while...)"
 	#ui.progressBar.setValue(progress+1)  #If this is ommitted, above line is not printed to textbox in GUI...
