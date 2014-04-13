@@ -42,7 +42,7 @@ try:
 	shutil.rmtree("qt_menu.nib")
 except:
 	pass
-shutil.copytree("/opt/local/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib", "qt_menu.nib")
+shutil.copytree("/usr/local/Frameworks/QtGui.framework/Resources/qt_menu.nib", "qt_menu.nib")
 
 # Py2app doesn't like extensionless Python scripts
 try:
@@ -56,7 +56,7 @@ setup(
     app = ['datamerger.py'],
     data_files = ['datamerger.py'],
     options = {'py2app' : 
-			{'argv_emulation': False, 
+			{'argv_emulation': True, 
 			 'includes' : ['PyQt4.QtCore','PyQt4.QtGui','PyQt4.QtWebKit', ],
                		 'excludes' : ['wx','pyglet','Image'],
                		 'resources' : ['resources'],

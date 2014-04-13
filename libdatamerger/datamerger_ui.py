@@ -41,8 +41,10 @@ def get_resource_loc(item):
 			return os.path.join(basedir,item)			
 		except:
 			# If packaged with py2exe (but should also work for py2installer (not tested!) )
-			basedir = os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))	
-			return os.path.join(basedir, "resources", item)
+			basedir = os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))
+			with open("output.txt","w") as f:
+				f.write(basedir)	
+			return os.path.join(basedir, "../Resources/resources", item)
 		
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
 		return os.path.join('/usr/share/datamerger/resources/', item)
