@@ -21,7 +21,7 @@ import sheet_io_tools
 from PyQt4 import QtCore, QtGui, uic
 from PyQt4.QtWebKit import QWebView
 
-version = "1.0.3"
+version = "1.0.4"
 author = "Daniel Schreij"
 email = "d.schreij@vu.nl"
 
@@ -34,6 +34,21 @@ Copyright 2013-2014
 """.format(version,author,email)	
 
 def get_resource_loc(item):
+	"""
+	Determines the correct path to the required resource.
+	When the app is packaged with py2exe or py2app, the locations of some images
+	or resources may change. This function should correct for that
+	
+	
+	Arguments:
+		item (string)  - the item to locate
+		
+	Returns:
+		(string) - the full path to the provided item
+	
+	"""
+	
+	# When the app is packaged with py2app/exe or pyinstaller
 	if getattr(sys, 'frozen', None):
 		try:
 			# If packaged with pyinstaller
@@ -45,14 +60,20 @@ def get_resource_loc(item):
 			with open("output.txt","w") as f:
 				f.write(basedir)	
 			return os.path.join(basedir, "../Resources/resources", item)
-		
+	
+	# For Linux when installed through a repo
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
 		return os.path.join('/usr/share/datamerger/resources/', item)
+	# When run from source
 	else:
 		basedir = os.path.dirname(__file__)
 		return os.path.join(basedir,"..","resources",item)
 
 class OutLog:
+	"""
+	Class that intercepts stdout and stderr prints, and shows them in te QT
+	textarea of the app.
+	"""
 	def __init__(self, statusBox, out=None, color=None):
 		"""(statusBox, out=None, color=None) -> can write stdout, stderr to a
 		QTextEdit.
@@ -78,12 +99,18 @@ class OutLog:
 
 		
 class DataMergerUI(QtGui.QMainWindow):	
+	"""
+	QT User interface
+	"""	
 	def __init__(self):
 		app = QtGui.QApplication(sys.argv)
 		self.ui = self._initUI()	
 		sys.exit(app.exec_())
 
-	def _initUI(self):								
+	def _initUI(self):
+		"""
+		Initializes the UI and sets button actions
+		"""							
 		QtGui.QMainWindow.__init__(self)
 
 		# Load resources							
@@ -91,7 +118,7 @@ class DataMergerUI(QtGui.QMainWindow):
 		ico_path = get_resource_loc("datamerger.png")
 		helpimg_path = get_resource_loc("help-about.png")
 		aboutimg_path = get_resource_loc("help-contents.png")		
-		
+		# icons
 		self.help_icon = QtGui.QIcon(helpimg_path)
 		self.about_icon = QtGui.QIcon(aboutimg_path)
 		
@@ -121,7 +148,9 @@ class DataMergerUI(QtGui.QMainWindow):
 			sys.stderr = OutLog(ui.statusBox, None, QtGui.QColor(255,0,0))
 		print ""
 		
+		# The folders to read data files from
 		self.sourceFolder = ""	
+		# the folder to write the output file to
 		self.destinationFile = ""
 		
 		self._lastSelectedDestDir = ""
@@ -130,12 +159,18 @@ class DataMergerUI(QtGui.QMainWindow):
 		return ui
 		
 	def center(self):
+		"""
+		Centers the main app window on the screen
+		"""
 		qr = self.frameGeometry()
 		cp = QtGui.QDesktopWidget().availableGeometry().center()
 		qr.moveCenter(cp)
 		self.move(qr.topLeft())
 	
 	def selectInputFolder(self):
+		"""
+		Select folder to read csv files from
+		"""
 		selectedFolder = str(QtGui.QFileDialog.getExistingDirectory(self, "Select Directory", directory=self.ui.inputFolderLocation.text()))
 		# Prevent erasing previous entry on cancel press		
 		if selectedFolder:
@@ -144,6 +179,9 @@ class DataMergerUI(QtGui.QMainWindow):
 			self.ui.progressBar.setValue(0)
 	
 	def selectOutputDestination(self):
+		"""
+		Set file to write output to
+		"""
 		selectedDest = QtGui.QFileDialog.getSaveFileName(self,"Save output as..",self.ui.outputFileDestination.text(),"*.csv; *.xls; *.xlsx")
 		# Prevent erasing previous entry on cancel press		
 		if selectedDest:
@@ -152,6 +190,9 @@ class DataMergerUI(QtGui.QMainWindow):
 			self.ui.progressBar.setValue(0)
 			
 	def startMerge(self):
+		"""
+		Starts the merge operation. Uses sheet_io_tools for this.
+		"""
 		if self.sourceFolder == "":
 			print >> sys.stderr, "Please select a source folder containing the data files to merge."			
 		elif self.destinationFile == "":
@@ -164,6 +205,9 @@ class DataMergerUI(QtGui.QMainWindow):
 				print "Ready."
 				
 	def showDocWindow(self):	
+		"""
+		Shows documentation window (with help and licensing info)
+		"""
 		self.docWindow = QWebView()
 		self.docWindow.closeEvent = self.closeDocWindow
 		self.docWindow.setWindowTitle("Documentation")
@@ -172,20 +216,17 @@ class DataMergerUI(QtGui.QMainWindow):
 		self.docWindow.show()
 			
 	def closeDocWindow(self,source):
+		"""
+		Callback function of the docWindow QWebView item.
+		Destroys reference to doc window after its closed
+		"""
 		del(self.docWindow)
 		
 	def showAboutWindow(self):
+		"""
+		Shows about window
+		"""
 		global aboutstring
 		msgBox = QtGui.QMessageBox(self)
 		msgBox.setWindowIcon(self.about_icon)		
 		msgBox.about(msgBox,"About",aboutString)
-		#QtGui.QMessageBox.about(self,"About",aboutString)
-				
-	def normalOutputWritten(self, text):
-		cursor = self.ui.statusBox.textCursor()
-		cursor.movePosition(QtGui.QTextCursor.End)
-		cursor.insertText(text)
-		self.ui.statusBox.setTextCursor(cursor)
-		self.ui.statusBox.ensureCursorVisible()
-		
-	
