@@ -130,6 +130,7 @@ class DataMergerUI(QtGui.QMainWindow):
 		ui.setWindowTitle('Data merger')		
 		ui.docButton.setIcon(self.help_icon)		
 		ui.aboutButton.setIcon(self.about_icon)	
+		ui.statusBox.setReadOnly(True)
 		ui.show()
 
 		# Set button actions				
