@@ -57,9 +57,10 @@ def get_resource_loc(item):
 		except:
 			# If packaged with py2exe (but should also work for py2installer (not tested!) )
 			basedir = os.path.dirname(unicode(sys.executable, sys.getfilesystemencoding( )))
-			with open("output.txt","w") as f:
-				f.write(basedir)	
-			return os.path.join(basedir, "../Resources/resources", item)
+			if sys.platform == "win32":
+				return os.path.join(basedir, "resources", item)
+			elif sys.platform == "darwin":
+				return os.path.join(basedir, "..", "Resources", "resources", item)
 	
 	# For Linux when installed through a repo
 	elif os.name == 'posix' and os.path.exists('/usr/share/datamerger/resources/'):
