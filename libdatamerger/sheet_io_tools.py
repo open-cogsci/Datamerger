@@ -22,7 +22,7 @@ import sys
 import csv
 
 # Import modules required for Excel files
-import xlrd	
+import xlrd
 import xlwt
 
 # For writing Excel 2007 and higher xlsx. Older versions of openpyxl may not
@@ -35,7 +35,7 @@ except:
 def correct_datatype(value):
 	""" Convert values to correct datatype if they are int or float
 	If they are uncovertible, just return the original string. """
-	
+
 	try:
 		return int(value)
 	except ValueError:
@@ -45,14 +45,14 @@ def correct_datatype(value):
 	except ValueError:
 		pass
 	return value
-	
+
 
 def read_csv(path_to_csv):
 	"""
-	Reads csv file to a list containing dictionaries, each representing a row. 
+	Reads csv file to a list containing dictionaries, each representing a row.
 	The keys of the dictionary represents the column names, and the value contains
 	the corresponding value of that cell.
-	
+
 	Args:
 		path_to_csv (string): a path to the csv file to be parsed
 	Returns:
@@ -65,7 +65,7 @@ def read_csv(path_to_csv):
 	except IOError as e:
 		print >> sys.stderr, e
 		return False
-		
+
 	# Try to determine which format of csv is used. In some countries, the
 	# list separator symbol is ; instead of , and hopefully this will catch that
 	# discrepancy.
@@ -74,30 +74,30 @@ def read_csv(path_to_csv):
 	except:
 		print >> sys.stderr, "Failed to sniff parameters for file {0}, assuming , to be the delimiter symbol".format(os.path.split(path_to_csv)[1])
 		dialect = csv.get_dialect('excel')
-			
-	f_csv.seek(0)			
-	
+
+	f_csv.seek(0)
+
 	# Read the file with dictreader. If the file is empty or corrupt (such as defaultlog.csv in OpenSesame)
 	# then skip the file but print an error message.
 	try:
 		data = csv.DictReader(f_csv,dialect=dialect,restkey="UNKNOWN",restval="")
 		fieldnames = data.fieldnames
 		read_data = []
-		
+
 		for row in data:
 			row["dm_source_file"] = os.path.split(path_to_csv)[1]
 			read_data.append(row)
-			
+
 		return(fieldnames, read_data)
 	except Exception as e:
-		print >> sys.stderr, "Failed to read file {0}: {1}".format(os.path.split(path_to_csv)[1],e)		
+		print >> sys.stderr, "Failed to read file {0}: {1}".format(os.path.split(path_to_csv)[1],e)
 		return (False, False)
-	
-	
+
+
 def write_csv(path_to_csv, header, data, ui=None, files=None):
 	"""
 	Writes a csv file from the specified data
-	
+
 	Args:
 		path_to_csv (string): The path where to save the csv file
 		header (list): A list with the header names (as strings)
@@ -112,18 +112,18 @@ def write_csv(path_to_csv, header, data, ui=None, files=None):
 	except IOError as e:
 		print >> sys.stderr, e
 		return False
-		
-	# Sort header alphabetically	
-	header.sort()	
-	
+
+	# Sort header alphabetically
+	header.sort()
+
 	output = csv.DictWriter(out_fp, fieldnames=header, dialect='excel', lineterminator="\n", quotechar="\"", restval="",escapechar="\\")
 	output.writeheader()
-	
+
 	errorCount = 0
 	counter = 0
 	if ui and files:
-		rows_part = len(data)/files	
-	
+		rows_part = len(data)/files
+
 	for row in data:
 		counter += 1
 		try:
@@ -131,22 +131,22 @@ def write_csv(path_to_csv, header, data, ui=None, files=None):
 		except Exception as e:
 			print >> sys.stderr, "Warning ("+ row["dm_source_file"] + "): " + str(e)
 			errorCount += 1
-		
+
 		if not ui is None:
 			if counter % rows_part == 0:
-				part = counter/rows_part								
+				part = counter/rows_part
 				progress = int((part+files)/float(2*files+1)*100)
-				ui.progressBar.setValue(progress)	
-				
-			
+				ui.progressBar.setValue(progress)
+
+
 	return errorCount
-	
+
 def read_xls(path_to_xls):
 	"""
-	Reads .xls or .xlsx file to a list containing dictionaries, each representing a row. 
+	Reads .xls or .xlsx file to a list containing dictionaries, each representing a row.
 	The keys of the dictionary represents the column names, and the value contains
 	the corresponding value of that cell.
-	
+
 	Args:
 		path_to_csv (string): a path to the csv file to be parsed
 	Returns:
@@ -158,7 +158,7 @@ def read_xls(path_to_xls):
 	sheet = workbook.sheet_by_index(0)
 	headers = sheet.row_values(0)
 	data = []
-	
+
 	for row in xrange(1,sheet.nrows):
 		row_values = sheet.row_values(row)
 		row_data = {}
@@ -166,13 +166,13 @@ def read_xls(path_to_xls):
 			row_data[headers[col]] = row_values[col]
 			row_data["dm_source_file"] = os.path.split(path_to_xls)[1]
 		data.append(row_data)
-				
+
 	return (headers, data)
 
 def write_xls(path_to_xls, header, data, ui=None, files=None):
 	"""
 	Writes a xls (Excel 97-2003) file from the specified data
-	
+
 	Args:
 		path_to_csv (string): The path where to save the csv file
 		header (list): A list with the header names (as strings)
@@ -182,9 +182,9 @@ def write_xls(path_to_xls, header, data, ui=None, files=None):
 	Returns:
 		errorCount (int): 0 if no errors, or otherwise the number of (non-critical) errors that occurred
 	"""
-	# Sort header alphabetically	
-	header.sort()	
-	
+	# Sort header alphabetically
+	header.sort()
+
 	workbook = xlwt.Workbook(encoding = 'utf8')
 	worksheet = workbook.add_sheet("merged_data")
 
@@ -193,38 +193,38 @@ def write_xls(path_to_xls, header, data, ui=None, files=None):
 	font.name = 'Arial'
 	font.bold = True
 	style = xlwt.XFStyle() # Create the Style
-	style.font = font # Apply the Font to the Style	
+	style.font = font # Apply the Font to the Style
 	for col in xrange(len(header)):
 		worksheet.write(0,col,header[col],style)
 
 	if ui and files:
-		rows_part = len(data)/files			
-		
-	# Write data	
-	for row in xrange(0,len(data)):				
+		rows_part = len(data)/files
+
+	# Write data
+	for row in xrange(0,len(data)):
 		for col in xrange(len(header)):
-			col_name = header[col]	
+			col_name = header[col]
 			try:
 				value = data[row][col_name]
 			except KeyError:
-				value = ""		
-						
+				value = ""
+
 			worksheet.write(row+1, col, correct_datatype(value) )
-		
+
 		if not ui is None:
 			if row % rows_part == 0:
-				part = row/rows_part								
+				part = row/rows_part
 				progress = int((part+files)/float(2*files+1)*100)
-				ui.progressBar.setValue(progress)	
-	
+				ui.progressBar.setValue(progress)
+
 	workbook.save(path_to_xls)
 	return 0
-	
-	
+
+
 def write_xlsx(path_to_xlsx, header, data, ui=None, files=None):
 	"""
 	Writes a xlsx file (Excel 2010 and higher) from the specified data
-	
+
 	Args:
 		path_to_csv (string): The path where to save the csv file
 		header (list): A list with the header names (as strings)
@@ -239,123 +239,122 @@ def write_xlsx(path_to_xlsx, header, data, ui=None, files=None):
 	# elegant way.
 	if Workbook is None:
 		return 1
-		
-	# Sort header alphabetically	
-	header.sort()	
-	
+
+	# Sort header alphabetically
+	header.sort()
+
 	workbook = Workbook(optimized_write = True)
 	worksheet = workbook.create_sheet()
-	
+
 	worksheet.title = "merged_data"
-				
+
 	if ui and files:
-		rows_part = len(data)/files	
-	
-	### Write data	
+		rows_part = len(data)/files
+
+	### Write data
 
 	# Write column names first
-	worksheet.append(header)	
-	
-	for row in xrange(0,len(data)):	
-		row_data = []				
+	worksheet.append(header)
+
+	for row in xrange(0,len(data)):
+		row_data = []
 		for col in xrange(len(header)):
-			col_name = header[col]	
+			col_name = header[col]
 			try:
 				value = data[row][col_name]
 			except KeyError:
 				value = ""
 			row_data.append(correct_datatype(value))
-			
+
 		worksheet.append(row_data)
-		
+
 		if not ui is None:
 			if row % rows_part == 0:
-				part = row/rows_part								
+				part = row/rows_part
 				progress = int((part+files)/float(2*files+1)*100)
-				ui.progressBar.setValue(progress)	
-	
+				ui.progressBar.setValue(progress)
+
 	workbook.save(filename = str(path_to_xlsx))
 	return 0
 
 def mergeFolder(folder, destination, ui=None):
 	"""
 	Merges the spreadsheet files in the specified folder to one spreadsheet in one file
-	
+
 	Args:
 		folder (string): The folder to scan for spreadsheet (csv,xls,xlsx) files
 		destination (string): The path and filename to save the merged data to (extension should be csv,xls,xlsx)
 		ui (PyQt.QtGui.QWidget) [optional]: If relevant, a reference to the Datamerger UI.
 	Returns:
 		errorCount (int): 0 if no errors, or otherwise the number of (non-critical) errors that occurred
-	"""	
+	"""
 	# Check if folder points to an existing dir
 	if not os.path.isdir(folder):
 		print >> sys.stderr, "ERROR: the specified folder " + folder + " is invalid"
 		return False
-		
+
 	# Filter for files with compatible extensions
-	folder_files = os.listdir(folder)	
+	folder_files = os.listdir(folder)
 	valid_files = filter(lambda x: os.path.splitext(x)[1] in  [".csv",".xls",".xlsx"], folder_files)
-	
+
 	if not len(valid_files):
 		print >> sys.stderr, "ERROR: Folder contains no mergable files"
 		return False
 
-	col_names = []	
+	col_names = []
 	total_data = []
 	unknown_found = False
-	
-	counter = 0	
+
+	counter = 0
 	for datafile in valid_files:
 		print "Reading file " + datafile
 		filetype = os.path.splitext(datafile)[1]
-		
+
 		if filetype == ".csv":
-			(header, data) = read_csv(os.path.join(folder,datafile))										
+			(header, data) = read_csv(os.path.join(folder,datafile))
 		elif filetype in [".xls",".xlsx"]:
-			(header, data) = read_xls(os.path.join(folder,datafile))						
-	
+			(header, data) = read_xls(os.path.join(folder,datafile))
+
 		# read_csv() can return (False, False) if csv file was invalid.
 		# Therefore check if data is correct and only then add to total data.
 		if header and data:
 			# Make sure every column name only occurs once
 			col_names = list(set(col_names) | set(header) )
-	
-			# Add data to rest of data		
+
+			# Add data to rest of data
 			total_data.extend(data)
 			counter += 1
-							
+
 			if not ui is None:
 				progress = int(counter/float(2*len(valid_files)+1)*100)
-				ui.progressBar.setValue(progress)	
+				ui.progressBar.setValue(progress)
 		else:
 			print >> sys.stderr, "Error reading {0}. Skipping ...".format(os.path.split(datafile)[1])
-	
+
 	print "Writing merged data to file (please be patient as this can take a while...)"
 	#ui.progressBar.setValue(progress+1)  #If this is ommitted, above line is not printed to textbox in GUI...
-	
+
 	# Add column to add source file info
 	col_names = ["dm_source_file"] + col_names
-	
+
 	# Add column for unnamed columns (only applicable for incorrectly formatted csv's.
 	# Usually these files crash the process, as they should)
 	if unknown_found:
 		col_names += ["UNKNOWN"]
-	
+
 	destination_ext = os.path.splitext(str(destination))[1]
-	
-	if destination_ext == ".csv":	
+
+	if destination_ext == ".csv":
 		errorCount = write_csv(destination, col_names, total_data, ui, len(valid_files))
 	elif destination_ext == ".xls":
 		errorCount = write_xls(destination, col_names, total_data, ui, len(valid_files))
 	elif destination_ext == ".xlsx":
 		errorCount = write_xlsx(destination, col_names, total_data, ui, len(valid_files))
-	
+
 	if not ui is None:
-		ui.progressBar.setValue(100)			
+		ui.progressBar.setValue(100)
 
 	print "Merged " + str(counter) + " files with " + str(errorCount) + " errors."
-	
+
 	return True
-	
-	
+

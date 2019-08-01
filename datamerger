@@ -19,7 +19,7 @@ Refer to <http://www.gnu.org/licenses/> for a copy of the GNU General Public Lic
 import sys
 import os
 from libdatamerger import sheet_io_tools
-		
+
 if __name__ == "__main__":
 	if len(sys.argv) == 1:
 		from libdatamerger.datamerger_ui import DataMergerUI
@@ -35,16 +35,15 @@ if __name__ == "__main__":
 		elif not os.path.isdir(os.path.split(sys.argv[2])[0]):
 			print >> sys.stderr, "Error: Invalid folder specified for output file"
 		elif os.path.isdir(sys.argv[2]):
-			print >> sys.stderr, "Error: Folder specified instead of filename for output file"	
+			print >> sys.stderr, "Error: Folder specified instead of filename for output file"
 		else:
 			if os.path.splitext(sys.argv[2])[1] not in [".csv",".xls",".xlsx"]:
 				sys.argv[2] += ".csv"
-			
+
 			# Make sure stacktrace is ommitted and only error message is printed
 			# if something goes wrong from here
 			try:
 				sheet_io_tools.mergeFolder(sys.argv[1], sys.argv[2])
 			except Exception as e:
 				print >> sys.stderr, "Error: " + str(e)
-		
-	
+
